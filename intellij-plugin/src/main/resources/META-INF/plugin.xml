@@ -1,0 +1,42 @@
+<idea-plugin>
+    <id>com.rlogman.varrefactoring</id>
+    <name>Java Var Refactoring</name>
+    <vendor>Example Organization</vendor>
+    <description><![CDATA[
+        Refactoring tool that converts explicit type declarations to use Java's 'var' keyword.
+        <br/>
+        Features:
+        <ul>
+            <li>Automatically identifies eligible variables for conversion to 'var'</li>
+            <li>Handles local variable declarations in Java 10+ projects</li>
+            <li>Supports batch refactoring for multiple files</li>
+            <li>Configurable rules for when to apply 'var' conversions</li>
+        </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+                serviceImplementation="com.rlogman.varrefactoring.intellij.settings.VarRefactoringSettings"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.rlogman.varrefactoring.intellij.VarRefactoringConfigurable"
+                id="com.rlogman.varrefactoring.configurable"
+                displayName="Java Var Refactoring"/>
+        <intentionAction>
+            <className>com.rlogman.varrefactoring.intellij.VarRefactoringIntention</className>
+            <category>Java/Declaration</category>
+        </intentionAction>
+    </extensions>
+
+    <actions>
+        <action id="VarRefactoring.ConvertToVar"
+                class="com.rlogman.varrefactoring.intellij.VarRefactoringAction"
+                text="Convert to 'var'"
+                description="Convert explicit type declarations to Java 10+ 'var' keyword">
+            <add-to-group group-id="RefactoringMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>

@@ -1,0 +1,60 @@
+name: Java Var Refactoring Plugin Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Build IntelliJ Plugin
+        run: ./gradlew :intellij-plugin:buildPlugin
+
+      - name: Build LSP Server
+        run: ./gradlew :lsp-server:shadowJar
+
+      - name: Upload IntelliJ Plugin to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: intellij-plugin/build/distributions/java-var-refactoring-${{ github.event.release.tag_name }}.zip
+          asset_name: java-var-refactoring-intellij-${{ github.event.release.tag_name }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload LSP Server to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: lsp-server/build/libs/lsp-server-${{ github.event.release.tag_name }}-all.jar
+          asset_name: java-var-refactoring-lsp-${{ github.event.release.tag_name }}.jar
+          asset_content_type: application/java-archive
+
+      - name: Publish Plugin to JetBrains Marketplace
+        if: success()
+        run: ./gradlew :intellij-plugin:publishPlugin
+        env:
+          PUBLISH_TOKEN: ${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
