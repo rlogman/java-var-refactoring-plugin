@@ -1,7 +1,8 @@
 package com.rlogman.varrefactoring.intellij.settings;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
@@ -15,7 +16,8 @@ import org.jetbrains.annotations.Nullable;
     name = "VarRefactoringSettings",
     storages = @Storage("VarRefactoringSettings.xml")
 )
-public class VarRefactoringSettings implements PersistentStateComponent<VarRefactoringSettings> {
+@Service
+public final class VarRefactoringSettings implements PersistentStateComponent<VarRefactoringSettings> {
 
     // Default values for settings
     private boolean allowPrimitiveTypes = true;
@@ -29,7 +31,7 @@ public class VarRefactoringSettings implements PersistentStateComponent<VarRefac
      * Get the instance of settings for the application.
      */
     public static VarRefactoringSettings getInstance() {
-        return ServiceManager.getService(VarRefactoringSettings.class);
+        return ApplicationManager.getApplication().getService(VarRefactoringSettings.class);
     }
 
     @Override

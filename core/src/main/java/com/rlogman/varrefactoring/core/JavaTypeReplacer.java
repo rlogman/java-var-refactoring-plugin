@@ -1,6 +1,5 @@
 package com.rlogman.varrefactoring.core;
 
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -41,14 +40,16 @@ public class JavaTypeReplacer {
 
         while (matcher.find()) {
             String declarationType = matcher.group(1);
-            String variableName = matcher.group(2);
             String initializer = matcher.group(3);
+            
+            // Determine if this is a field or local variable
+            boolean isLocal = isLocalVariable(fileContent, matcher.start());
 
             // For demonstration only - would need actual type analysis
             String initializerType = inferType(initializer);
 
             // Check if this declaration is eligible for 'var' replacement
-            if (eligibilityPredicate.test(declarationType, initializerType, true, false)) {
+            if (eligibilityPredicate.test(declarationType, initializerType, isLocal, false)) {
                 int replaceStart = matcher.start(1) + offset;
                 int replaceEnd = matcher.end(1) + offset;
 
@@ -61,6 +62,35 @@ public class JavaTypeReplacer {
         }
 
         return result.toString();
+    }
+    
+    /**
+     * Determine if a variable declaration is a local variable based on its context.
+     * Very simple heuristic for the demo - a proper parser would be used in reality.
+     * 
+     * @param fileContent The complete file content
+     * @param position The position of the variable declaration
+     * @return true if it appears to be a local variable, false if it's likely a field
+     */
+    private boolean isLocalVariable(String fileContent, int position) {
+        // Check if the declaration is inside a method by looking for '{' and '}'
+        // This is a very naive implementation for demonstration purposes
+        
+        // Get substring up to the position
+        String beforeDecl = fileContent.substring(0, position);
+        
+        // Count opening and closing braces
+        int openBraces = 0;
+        int closeBraces = 0;
+        
+        for (char c : beforeDecl.toCharArray()) {
+            if (c == '{') openBraces++;
+            if (c == '}') closeBraces++;
+        }
+        
+        // Simple heuristic: if we have at least one more open brace than close brace,
+        // and we have at least 2 braces total, then we're likely inside a method
+        return openBraces > closeBraces && openBraces >= 2;
     }
 
     /**
@@ -85,8 +115,7 @@ public class JavaTypeReplacer {
             return "String";
         } else if (initializer.matches("new \\w+.*")) {
             // Extract type from "new Type(...)"
-            String type = initializer.substring(4).split("[(<]")[0].trim();
-            return type;
+            return initializer.substring(4).split("[(<]")[0].trim();
         }
 
         // Default fallback

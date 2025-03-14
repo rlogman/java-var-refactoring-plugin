@@ -1,4 +1,4 @@
-rootProject.name = "java-var-refactoring"
+rootProject.name = "java-var-refactoring-plugin"
 
 include("core")
 include("common")

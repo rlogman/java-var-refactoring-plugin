@@ -6,6 +6,9 @@ plugins {
 dependencies {
     implementation(project(":core"))
     implementation(project(":common"))
+    
+    // IntelliJ platform dependencies
+    implementation("org.jetbrains:annotations:24.0.1")
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -24,7 +27,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("232") // Minimum IDEA version
+        sinceBuild.set("233") // Minimum IDEA version
         untilBuild.set("242.*") // Maximum IDEA version
         changeNotes.set("""
             Initial release:

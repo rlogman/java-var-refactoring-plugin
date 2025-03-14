@@ -117,4 +117,119 @@ public class VarRefactoringTextDocumentService implements TextDocumentService {
         
         return edit;
     }
+    
+    // Required methods from TextDocumentService interface with minimal implementations
+    
+    @Override
+    public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
+        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+    }
+    
+    @Override
+    public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
+        return CompletableFuture.completedFuture(unresolved);
+    }
+    
+    @Override
+    public CompletableFuture<Hover> hover(HoverParams params) {
+        return CompletableFuture.completedFuture(new Hover());
+    }
+    
+    @Override
+    public CompletableFuture<SignatureHelp> signatureHelp(SignatureHelpParams params) {
+        return CompletableFuture.completedFuture(new SignatureHelp());
+    }
+    
+    @Override
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> declaration(DeclarationParams params) {
+        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+    }
+    
+    @Override
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
+        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+    }
+    
+    @Override
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> typeDefinition(TypeDefinitionParams params) {
+        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+    }
+    
+    @Override
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> implementation(ImplementationParams params) {
+        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+    }
+    
+    @Override
+    public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(DocumentHighlightParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(DocumentSymbolParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    // These methods are not required by the TextDocumentService interface
+    // so we'll remove them
+    
+    @Override
+    public CompletableFuture<CodeLens> resolveCodeLens(CodeLens unresolved) {
+        return CompletableFuture.completedFuture(unresolved);
+    }
+    
+    @Override
+    public CompletableFuture<List<? extends TextEdit>> formatting(DocumentFormattingParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<List<? extends TextEdit>> rangeFormatting(DocumentRangeFormattingParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<List<? extends TextEdit>> onTypeFormatting(DocumentOnTypeFormattingParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<WorkspaceEdit> rename(RenameParams params) {
+        return CompletableFuture.completedFuture(new WorkspaceEdit());
+    }
+    
+    @Override
+    public CompletableFuture<List<DocumentLink>> documentLink(DocumentLinkParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<DocumentLink> documentLinkResolve(DocumentLink params) {
+        return CompletableFuture.completedFuture(params);
+    }
+    
+    @Override
+    public CompletableFuture<List<ColorInformation>> documentColor(DocumentColorParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<List<ColorPresentation>> colorPresentation(ColorPresentationParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<List<FoldingRange>> foldingRange(FoldingRangeRequestParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
+    
+    @Override
+    public CompletableFuture<List<SelectionRange>> selectionRange(SelectionRangeParams params) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
+    }
 }

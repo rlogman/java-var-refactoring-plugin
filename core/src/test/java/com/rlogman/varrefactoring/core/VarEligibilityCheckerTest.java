@@ -58,8 +58,8 @@ class VarEligibilityCheckerTest {
     @ParameterizedTest
     @CsvSource({
         "String, String, true",
-        "java.util.List<String>, java.util.List<String>, true",
-        "Map<String,Integer>, Map<String,Integer>, true"
+        "'java.util.List<String>', 'java.util.List<String>', true",
+        "'Map<String,Integer>', 'Map<String,Integer>', true"
     })
     void shouldReplaceObjectTypesWithMatchingInitializer(
             String declaredType, String initializerType, boolean expected) {
@@ -92,9 +92,9 @@ class VarEligibilityCheckerTest {
     
     @ParameterizedTest
     @CsvSource({
-        "List<>, ArrayList<String>, true, true",
-        "List<>, ArrayList<String>, false, false",
-        "Map<,>, HashMap<String,Integer>, true, true"
+        "'List<>', 'ArrayList<String>', true, true",
+        "'List<>', 'ArrayList<String>', false, false",
+        "'Map<>', 'HashMap<String,Integer>', true, true"
     })
     void shouldReplaceDiamondOperatorBasedOnSettings(
             String declaredType, String initializerType, 

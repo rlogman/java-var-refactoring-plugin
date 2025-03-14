@@ -29,6 +29,7 @@ dependencies {
     // Eclipse LSP4J for Language Server Protocol implementation
     implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.1")
     implementation("org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.21.1")
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j.debug:0.21.1")
 }
 
 application {

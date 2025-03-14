@@ -7,6 +7,7 @@ import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
@@ -93,8 +94,11 @@ public class VarRefactoringIntention extends PsiElementBaseIntentionAction imple
             return;
         }
 
+        var varType = PsiType.getTypeByName("var", project, variable.getResolveScope());
         var newVariable = factory.createVariableDeclarationStatement(
-            "var", name, initializer
+                variable.getName(),
+                varType,
+                initializer
         ).getFirstChild();
 
         variable.replace(newVariable);

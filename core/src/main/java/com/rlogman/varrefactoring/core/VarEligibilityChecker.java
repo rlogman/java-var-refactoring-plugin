@@ -35,8 +35,11 @@ public class VarEligibilityChecker {
             return false;
         }
 
+        // Check if the declaration involves a diamond operator
+        boolean hasDiamondOperator = containsDiamondOperator(declarationType);
+        
         // Skip if the declaration uses diamond operator and options disallow it
-        if (declarationType.contains("<>") && !options.isAllowDiamondOperator()) {
+        if (hasDiamondOperator && !options.isAllowDiamondOperator()) {
             return false;
         }
 
@@ -47,11 +50,17 @@ public class VarEligibilityChecker {
 
         // Check if the declared type and initializer type match
         // If they don't match, we might want to keep the explicit type
-        if (!options.isAllowDifferentTypes() && !declarationType.equals(initializerType)) {
+        if (!options.isAllowDifferentTypes() && !declarationType.equals(initializerType)) 
             return false;
-        }
 
         return true;
+    }
+    
+    /**
+     * Check if a type declaration contains a diamond operator.
+     */
+    private boolean containsDiamondOperator(String type) {
+        return type.contains("<>") || type.endsWith("<>");
     }
 
     private boolean isPrimitiveType(String typeName) {

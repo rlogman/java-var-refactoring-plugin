@@ -7,6 +7,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.pom.java.LanguageLevel;
+import com.intellij.psi.util.PsiUtil;
 
 import java.util.Collection;
 
@@ -28,12 +31,14 @@ public class IntellijVarRefactoringProcessor {
      * Process a Java file for var refactoring.
      *
      * @param javaFile The PSI Java file
-     * @param editor The editor instance
+     * @param editor The editor instance (can be null for batch processing)
+     * @return true if the file was modified, false otherwise
      */
-    public void processFile(@NotNull PsiJavaFile javaFile, @NotNull Editor editor) {
+    public boolean processFile(@NotNull PsiJavaFile javaFile, @Nullable Editor editor) {
+        boolean wasModified = false;
         // Check if Java version supports 'var'
         if (!isVarSupported(javaFile)) {
-            return;
+            return wasModified;
         }
 
         // Find all local variable declarations
@@ -41,7 +46,8 @@ public class IntellijVarRefactoringProcessor {
 
         // Process each local variable
         for (PsiLocalVariable variable : localVariables) {
-            processVariable(variable);
+            boolean modified = processVariable(variable);
+            wasModified = wasModified || modified;
         }
 
         // Process for loops if enabled in options
@@ -50,24 +56,30 @@ public class IntellijVarRefactoringProcessor {
                 PsiTreeUtil.findChildrenOfType(javaFile, PsiForeachStatement.class);
 
             for (PsiForeachStatement foreachStatement : foreachStatements) {
-                processForEachVariable(foreachStatement);
+                boolean modified = processForEachVariable(foreachStatement);
+                wasModified = wasModified || modified;
             }
         }
+        
+        return wasModified;
     }
 
     /**
      * Process a local variable declaration.
+     * 
+     * @param variable The variable to process
+     * @return true if the variable was modified
      */
-    private void processVariable(PsiLocalVariable variable) {
+    private boolean processVariable(PsiLocalVariable variable) {
         // Skip if already using 'var'
         if (isVarType(variable.getType())) {
-            return;
+            return false;
         }
 
         // Skip if no initializer is present
         PsiExpression initializer = variable.getInitializer();
         if (initializer == null) {
-            return;
+            return false;
         }
 
         // Get the declared type and initializer type
@@ -88,26 +100,33 @@ public class IntellijVarRefactoringProcessor {
             PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
 
             // Create new variable with 'var' type
+            var varType = PsiType.getTypeByName("var", project, variable.getResolveScope());
             var newVariable = factory.createVariableDeclarationStatement(
-                "var",
-                variable.getName(),
-                initializer
+                    variable.getName(),
+                    varType,
+                    initializer
             ).getFirstChild();
 
             // Replace the old variable with the new one
             variable.replace(newVariable);
+            return true;
         }
+        
+        return false;
     }
 
     /**
      * Process a for-each loop variable.
+     * 
+     * @param foreachStatement The foreach statement to process
+     * @return true if the variable was modified
      */
-    private void processForEachVariable(PsiForeachStatement foreachStatement) {
+    private boolean processForEachVariable(PsiForeachStatement foreachStatement) {
         PsiParameter loopParameter = foreachStatement.getIterationParameter();
 
         // Skip if already using 'var'
         if (isVarType(loopParameter.getType())) {
-            return;
+            return false;
         }
 
         // Get the type of the iteration parameter and the collection being iterated
@@ -115,7 +134,7 @@ public class IntellijVarRefactoringProcessor {
 
         PsiExpression iteratedValue = foreachStatement.getIteratedValue();
         if (iteratedValue == null || iteratedValue.getType() == null) {
-            return;
+            return false;
         }
 
         // Try to infer the element type from the collection
@@ -138,13 +157,16 @@ public class IntellijVarRefactoringProcessor {
 
             // Replace the old parameter with the new one
             loopParameter.replace(newParameter);
+            return true;
         }
+        
+        return false;
     }
 
     /**
      * Check if a variable is part of a for loop.
      */
-    private boolean isVariableInForLoop(PsiLocalVariable variable) {
+    public boolean isVariableInForLoop(PsiLocalVariable variable) {
         PsiElement parent = variable.getParent();
         while (parent != null) {
             if (parent instanceof PsiForStatement || parent instanceof PsiForeachStatement) {
@@ -158,14 +180,14 @@ public class IntellijVarRefactoringProcessor {
     /**
      * Check if a type is the 'var' type.
      */
-    private boolean isVarType(PsiType type) {
+    public boolean isVarType(PsiType type) {
         return type.getCanonicalText().equals("var");
     }
 
     /**
      * Infer the element type from a collection type.
      */
-    private String inferElementType(String collectionType) {
+    public String inferElementType(String collectionType) {
         // Simple inference for common collection types
         if (collectionType.startsWith("java.util.List<") ||
             collectionType.startsWith("java.util.ArrayList<") ||
@@ -210,5 +232,29 @@ public class IntellijVarRefactoringProcessor {
 
         // 'var' was introduced in Java 10
         return languageLevel.isAtLeast(LanguageLevel.JDK_10);
+    }
+    
+    /**
+     * Get the refactoring options.
+     * 
+     * @return The current options
+     */
+    public RefactoringOptions getOptions() {
+        return options;
+    }
+    
+    /**
+     * Check if a variable is eligible for replacement with 'var'.
+     * 
+     * @param declaredType The declared type
+     * @param initializerType The initializer type
+     * @param isLocal Whether the variable is local
+     * @param isInForLoop Whether the variable is in a for loop
+     * @return true if eligible for replacement
+     */
+    public boolean isEligibleForReplacement(String declaredType, String initializerType, 
+                                           boolean isLocal, boolean isInForLoop) {
+        return eligibilityChecker.isEligibleForVarReplacement(
+            declaredType, initializerType, isLocal, isInForLoop);
     }
 }
