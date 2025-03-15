@@ -2,6 +2,25 @@ plugins {
     id("java-library")
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/java")
+        }
+        resources {
+            srcDirs("src/main/resources")
+        }
+    }
+    test {
+        java {
+            srcDirs("src/test/java")
+        }
+        resources {
+            srcDirs("src/test/resources")
+        }
+    }
+}
+
 dependencies {
     implementation(project(":common"))
 

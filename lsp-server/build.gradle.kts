@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     id("application")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 sourceSets {

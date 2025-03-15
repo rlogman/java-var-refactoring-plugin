@@ -29,8 +29,12 @@ public class JavaTypeReplacer {
 
         // Simple pattern to match variable declarations
         // This is oversimplified and would need a proper parser in reality
+        // Capture group 1: modifiers (like 'final')
+        // Capture group 2: type name
+        // Capture group 3: variable name
+        // Capture group 4: initializer
         Pattern pattern = Pattern.compile(
-            "\\b([A-Za-z][A-Za-z0-9_]*(?:<.*?>)?)\\s+([a-z][A-Za-z0-9_]*)\\s*=\\s*(.+?);"
+            "\\b((?:final\\s+)?)([A-Za-z][A-Za-z0-9_]*(?:<.*?>)?)\\s+([a-z][A-Za-z0-9_]*)\\s*=\\s*(.+?);"
         );
 
         Matcher matcher = pattern.matcher(fileContent);
@@ -39,8 +43,10 @@ public class JavaTypeReplacer {
         int offset = 0;
 
         while (matcher.find()) {
-            String declarationType = matcher.group(1);
-            String initializer = matcher.group(3);
+            // Group 1 contains modifiers like 'final' - we don't modify these, just preserve them
+            String declarationType = matcher.group(2);
+            // Group 3 contains variable name - not used for the replacement logic
+            String initializer = matcher.group(4);
             
             // Determine if this is a field or local variable
             boolean isLocal = isLocalVariable(fileContent, matcher.start());
@@ -50,11 +56,11 @@ public class JavaTypeReplacer {
 
             // Check if this declaration is eligible for 'var' replacement
             if (eligibilityPredicate.test(declarationType, initializerType, isLocal, false)) {
-                int replaceStart = matcher.start(1) + offset;
-                int replaceEnd = matcher.end(1) + offset;
+                int typeReplaceStart = matcher.start(2) + offset;
+                int typeReplaceEnd = matcher.end(2) + offset;
 
-                // Replace the type with 'var'
-                result.replace(replaceStart, replaceEnd, "var");
+                // Replace just the type with 'var', preserving any modifiers
+                result.replace(typeReplaceStart, typeReplaceEnd, "var");
 
                 // Update offset for future replacements
                 offset += "var".length() - declarationType.length();

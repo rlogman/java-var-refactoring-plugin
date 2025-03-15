@@ -15,11 +15,10 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class VarRefactoringProcessorTest {
 
     private VarRefactoringProcessor processor;
-    private RefactoringOptions defaultOptions;
 
     @BeforeEach
     void setUp() {
-        defaultOptions = new RefactoringOptions();
+        RefactoringOptions defaultOptions = new RefactoringOptions();
         processor = new VarRefactoringProcessor(defaultOptions);
     }
 
@@ -133,5 +132,19 @@ class VarRefactoringProcessorTest {
 
         // Then
         assertThat(results).isEqualTo(expected);
+    }
+    
+    @Test
+    void shouldPreserveFinalModifier() {
+        // Given
+        String code = "class Test { void method() { final String text = \"hello\"; } }";
+        String expected = "class Test { void method() { final var text = \"hello\"; } }";
+        String javaVersion = "11";
+
+        // When
+        String result = processor.processFile(code, javaVersion);
+
+        // Then
+        assertThat(result).isEqualTo(expected);
     }
 }

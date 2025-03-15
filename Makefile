@@ -3,7 +3,7 @@
 
 # Variables
 GRADLEW := ./gradlew
-PROJECT_NAME := java-var-refactoring
+PROJECT_NAME := java-var-refactoring-plugin
 INTELLIJ_PLUGIN_DIR := intellij-plugin
 LSP_SERVER_DIR := lsp-server
 CORE_DIR := core
@@ -87,7 +87,7 @@ rebuild: clean build
 .PHONY: release
 release: clean test plugin lsp
 	mkdir -p releases
-	cp $(INTELLIJ_PLUGIN_DIR)/build/distributions/$(PROJECT_NAME)-$(VERSION).zip releases/
+	cp $(INTELLIJ_PLUGIN_DIR)/build/distributions/intellij-plugin-$(VERSION).zip releases/$(PROJECT_NAME)-$(VERSION).zip
 	cp $(LSP_SERVER_DIR)/build/libs/lsp-server-$(VERSION)-all.jar releases/$(PROJECT_NAME)-lsp-$(VERSION).jar
 	@echo "Release packages created in releases/ directory"
 

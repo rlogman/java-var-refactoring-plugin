@@ -20,7 +20,7 @@ A JetBrains plugin that refactors Java code to use the idiomatic `var` keyword i
 
 ### Manual Installation
 
-1. Download the latest release JAR file from the [Releases](https://github.com/your-username/java-var-refactoring/releases) page
+1. Download the latest release JAR file from the [Releases](https://github.com/rlogman/java-var-refactoring-plugin/releases) page
 2. In your IDE, go to `Settings` > `Plugins` > `⚙️` > `Install Plugin from Disk...`
 3. Select the downloaded JAR file and restart the IDE
 
@@ -74,7 +74,7 @@ Example `package.json` for a VS Code extension:
 
 ```json
 {
-  "name": "java-var-refactoring",
+  "name": "java-var-refactoring-plugin",
   "displayName": "Java Var Refactoring",
   "description": "Refactors Java code to use the var keyword",
   "version": "1.0.0",
@@ -135,8 +135,8 @@ For NetBeans integration:
 
 1. Clone the repository
    ```
-   git clone https://github.com/your-username/java-var-refactoring.git
-   cd java-var-refactoring
+   git clone https://github.com/rlogman/java-var-refactoring-plugin.git
+   cd java-var-refactoring-plugin
    ```
 
 2. Build the project
@@ -154,7 +154,7 @@ For NetBeans integration:
 The project is set up with the following structure:
 
 ```
-java-var-refactoring/
+java-var-refactoring-plugin/
 ├── core/                      # Core refactoring logic
 ├── common/                    # Shared utilities
 ├── intellij-plugin/           # IntelliJ plugin implementation
